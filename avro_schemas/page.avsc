@@ -1,0 +1,22 @@
+{
+	"namespace": "ca.seabass.webparse.avro",
+ 	"type": "record",
+ 	"name": "Page",
+ 	"fields": [
+     {
+     	"name": "url",
+     	"type": "string"
+     },
+     {
+     	"name": "tags",
+     	"type": {
+     		"type": "array",
+     		"items": ["string", "null"]
+     	}
+     },
+     {
+     	"name": "body",
+     	"type": ["string", "null"]
+     }
+ ]
+}
