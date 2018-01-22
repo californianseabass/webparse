@@ -8,10 +8,18 @@ pip install -r requirements.txt
 
 
 ##### Setting up a local elasticsearch instance
+[Download and install the latest elasticsearch][elasticsearch-installation]
+Add elasticsearch to your path
+In order to start your elasticsearch cluster:
+``` bash
+./elasticsearch
+```
 
 
 #### Create the sites index:
-https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html
+[Creating a new index.][create index]
+Add the index to store url pages.
+
 curl -XPUT 'http://localhost:9200/pages?pretty' -d '{
     "settings" : {
         "index" : {
@@ -20,3 +28,7 @@ curl -XPUT 'http://localhost:9200/pages?pretty' -d '{
         }
     }
 }'
+
+
+[create index](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
+[elasticsearch-installation](https://www.elastic.co/guide/en/elasticsearch/reference/current/_installation.html)
