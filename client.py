@@ -8,7 +8,7 @@ import avro.schema as avro_schema
 import avro.io
 import avro.ipc
 
-SCHEMA = avro_schema.Parse(open("avro_schemas/page.avsc", "rt").read())
+SCHEMA = avro_schema.Parse(open("avro_schemas/page.avpr", "rt").read())
 
 CONST_URLS = [
     'http://www.codethatgrows.com/lessons-learned-from-rust-the-result-monad/',
@@ -33,7 +33,7 @@ def send_message(connection, message):
 
 def main():
     connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    connection.connect(('127.0.0.1', 12345))
+    connection.connect(('127.0.0.1', 65111))
     for url in CONST_URLS:
         send_message(connection, {
             'url': url,

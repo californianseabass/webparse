@@ -1,0 +1,22 @@
+{
+    "namespace": "io.csb.kleio",
+    "protocol": "kleio",
+    "types": [
+          {
+            "type": "record",
+            "name": "Page",
+            "fields": [
+               {
+                "name": "url",
+                "type": "string"
+               }
+           ]
+         }
+    ],
+    "messages": {
+        "saves": {
+            "request": [{"name": "save", "type": "Page"}],
+            "response": "Page"
+        }
+    }
+}
