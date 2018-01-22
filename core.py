@@ -1,8 +1,13 @@
 import bs4
 import mmh3
 import requests
+import psycopg2
+import pprint
+import uuid
+
 
 from es import Page
+
 
 def parse_url(url):
     response = requests.get(url)
@@ -29,8 +34,28 @@ def process_url(url):
     page = Page(meta={'id': hash_id}, url=url, body=text, tags='')
     return page
 
+
 def process_urls(urls):
     pages = list(map(process_url, urls))
     ids = [x._id for x in pages]
     print(ids)
     # [x.save() for x in pages]
+
+
+class Database(object):
+    def __init__(self, **kwargs):
+        self.dbargs = kwargs
+
+
+    def save_url_to_table(self, url):
+        with psycopg2.connect(**self.dbargs) as conn:
+                with conn.cursor() as cursor:
+                    pg_uuid = uuid.uuid4()
+                    # check for duplicates
+                    cursor.execute('INSERT INTO wp.pages (id, name, created_ts)'
+                                    'select \'{}\', \'{}\', current_timestamp '
+                                    'WHERE NOT EXISTS '
+                                    '(SELECT name FROM wp.pages WHERE name = \'{}\');'.format(
+                                        str(pg_uuid), url, url
+                                    ))
+                conn.commit()

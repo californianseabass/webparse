@@ -1,13 +1,12 @@
-from datetime import datetime
 from elasticsearch import Elasticsearch
-from elasticsearch_dsl import DocType, String, Date
-from elasticsearch_dsl import Search
 from elasticsearch_dsl.connections import connections
-
+from elasticsearch_dsl import Keyword, Mapping, Nested, Text
+from elasticsearch_dsl import DocType
 # client = Elasticsearch()
 # s = Search(using=client)
 
 connections.create_connection(hosts=['localhost'])
+
 
 class Page(DocType):
     ''' document, hashtags, url, store date
@@ -16,12 +15,6 @@ class Page(DocType):
         that counts as metadata to elasticsearch
 
     '''
-    url = String(index='not_analyzed')
-    # title = String(analyzer='snowball', fields={'raw': String(index='not_analyzed')})
-    body = String(analyzer='snowball')
-    tags = String(index='not_analyzed')
-    save_date = Date()
-
     class Meta:
       index = 'page'
 
@@ -32,7 +25,26 @@ class Page(DocType):
 def initialize_indices():
     # connections.create_connection(hosts=['localhost'])
     print('Initiliazing Page index')
-    Page.init()
+    # name your type
+    m = Mapping('page')
+    # url = String(index='not_analyzed')
+    # title = String(analyzer='snowball', fields={'raw': String(index='not_analyzed')})
+    # body = String(analyzer='snowball')
+    # tags = String(index='not_analyzed')
+    # save_date = Date()
+    # add fields
+    m.field('url', 'text')
+    m.field('body', 'text')
+    m.field('tags', 'text')
+    m.field('save_date', 'text')
+
+    # you can also define mappings for the meta fields
+    m.meta('_all', enabled=False)
+
+    # save the mapping into index 'my-index'
+    m.save('page')
+
+
 
 def main():
     print('Initializing Elasticsearch cluster')

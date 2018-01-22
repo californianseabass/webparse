@@ -1,0 +1,43 @@
+{
+  "variables": {
+    "pg_pass": "password",
+    "db_name": "webparse"
+  },
+  "builders": [
+    {
+      "type": "docker",
+      "image": "postgres:latest",
+      "commit": true,
+      "changes": [
+        "ENV POSTGRES_PASSWORD {{ user `pg_pass` }}",
+        "ENV POSTGRES_USER postgres",
+        "ENV POSTGRES_DB {{ user `db_name` }}",
+        "EXPOSE 5432 5432"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "./init.sql",
+      "destination": "/docker-entrypoint-initdb.d/init.sql"
+    },
+    {
+      "type": "shell",
+      "inline": "chown postgres /docker-entrypoint-initdb.d/init.sql"
+    },
+    {
+      "type": "shell",
+      "inline": "/docker-entrypoint.sh"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "amoebas/postgres",
+        "tag": "v0.0.1"
+      }
+    ]
+  ]
+}
