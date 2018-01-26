@@ -15,7 +15,6 @@ In order to start your elasticsearch cluster:
 elasticsearch
 ```
 
-
 #### Create the sites index:
 [Creating a new index.][create index]
 Add the index to store url pages.
@@ -30,6 +29,10 @@ curl -XPUT 'http://localhost:9200/pages?pretty' -d '{
 }'
 
 
+#### Connecting to postgres via psql
+```bash
+psql -d webparse -U webparse_user -h localhost
+```
 
 #### Checking Elasticsearch
 You can do this from kibana.
@@ -44,7 +47,11 @@ GET /_cat/indices?v
 ```
 * delete pages index
 ```bash
-DELETE /customer?pretty
+DELETE /page?pretty
+```
+* read everything in the index q=*:*
+```bash
+GET page/_search?pretty=true&q=*:*
 ```
 
 

@@ -1,6 +1,8 @@
+from datetime import datetime
+
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl.connections import connections
-from elasticsearch_dsl import Keyword, Mapping, Nested, Text
+from elasticsearch_dsl import Date, Keyword, Mapping, Nested, Text
 from elasticsearch_dsl import DocType
 # client = Elasticsearch()
 # s = Search(using=client)
@@ -15,6 +17,12 @@ class Page(DocType):
         that counts as metadata to elasticsearch
 
     '''
+    url = Text()
+    title = Text()
+    body = Text(analyzer='snowball')
+    tags = Text()
+    save_date = Date()
+
     class Meta:
       index = 'page'
 
@@ -34,9 +42,10 @@ def initialize_indices():
     # save_date = Date()
     # add fields
     m.field('url', 'text')
+    m.field('title', 'text')
     m.field('body', 'text')
     m.field('tags', 'text')
-    m.field('save_date', 'text')
+    m.field('save_date', 'date')
 
     # you can also define mappings for the meta fields
     m.meta('_all', enabled=False)
@@ -45,10 +54,9 @@ def initialize_indices():
     m.save('page')
 
 
-
 def main():
-    print('Initializing Elasticsearch cluster')
-    initialize_indices()
+    # initialize_indices()
+    Page.init()
 
 
 if __name__ == '__main__':

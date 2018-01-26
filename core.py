@@ -1,22 +1,47 @@
 import bs4
+import elasticsearch
+import elasticsearch_dsl
+import hashlib
+import inspect
 import mmh3
+import re
 import requests
-import psycopg2
-import pprint
-import uuid
 
 
+from database import Database
 from es import Page
+
+
+def generate_url_hash(url):
+    url_hash = hashlib.sha256()
+    url_hash.update(url.encode('utf-8'))
+    hash_str = url_hash.hexdigest()
+    print(hash_str)
+    return hash_str
+
+
+def clean_title_string(title):
+    return re.sub('\s+', ' ', title.strip())
 
 
 def parse_url(url):
     response = requests.get(url)
     soup = bs4.BeautifulSoup(response.text, 'html.parser')
+    title = clean_title_string(soup.title.string)
     text = soup.get_text()
-    return text
+    return title, text
 
 
-def process_url(url):
+def search_pages(search_term):
+    client = elasticsearch.Elasticsearch()
+    search = elasticsearch_dsl.Search(using=client, index='page') \
+                              .query('match', body=search_term)
+    result = search.execute()
+    for i, hit in enumerate(result.hits):
+        print(f'{i} := {hit.title}')
+
+
+def process_url(url, db_object):
     """ Uses an underlying library to scrape a webpage, and then creates an object
         that is appropriate for storage in elasticsearch
 
@@ -28,34 +53,33 @@ def process_url(url):
             Page: Instance of an es-Doctype subclass, represents information for page
 
     """
-    orig_text = parse_url(url)
-    text = ' '.join(orig_text.split())
-    hash_id = mmh3.hash(text) # murmur hash, 32 bit
-    page = Page(meta={'id': hash_id}, url=url, body=text, tags='')
-    return page
+    if not inspect.isclass(Database):
+        raise Exception('db_object must be of class Database')
+    hash_id = generate_url_hash(url)
+    pg_page = db_object.save_url_to_table(url, hash_id)
+    es_page = None
+    if pg_page:
+        title, orig_text = parse_url(url)
+        text = ' '.join(orig_text.split())
+        #hash_id = mmh3.hash(text)  # murmur hash, 32 bit
+        es_page = Page(meta={'id': hash_id}, url=url, title=title, body=text, tags='')
+        es_page.save()
+    else:
+        client = elasticsearch.Elasticsearch(index='page')
+        search = elasticsearch_dsl.Search().using(client).query('match', _id=hash_id)
+        try:
+            es_page = search.execute()[0]
+        except IndexError as ie:
+            print('Elasticsearch is missing something that postgres has')
+
+    return (pg_page, es_page)
 
 
 def process_urls(urls):
     pages = list(map(process_url, urls))
     ids = [x._id for x in pages]
     print(ids)
-    # [x.save() for x in pages]
 
 
-class Database(object):
-    def __init__(self, **kwargs):
-        self.dbargs = kwargs
-
-
-    def save_url_to_table(self, url):
-        with psycopg2.connect(**self.dbargs) as conn:
-                with conn.cursor() as cursor:
-                    pg_uuid = uuid.uuid4()
-                    # check for duplicates
-                    cursor.execute('INSERT INTO wp.pages (id, name, created_ts)'
-                                    'select \'{}\', \'{}\', current_timestamp '
-                                    'WHERE NOT EXISTS '
-                                    '(SELECT name FROM wp.pages WHERE name = \'{}\');'.format(
-                                        str(pg_uuid), url, url
-                                    ))
-                conn.commit()
+def search_term():
+    return

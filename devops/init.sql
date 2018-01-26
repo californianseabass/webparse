@@ -7,6 +7,7 @@ CREATE SCHEMA IF NOT EXISTS public AUTHORIZATION webparse_admin;
 
 CREATE SCHEMA IF NOT EXISTS wp AUTHORIZATION webparse_admin;
 GRANT ALL PRIVILEGES ON SCHEMA wp TO webparse_admin;
+GRANT ALL PRIVILEGES ON DATABASE webparse to webparse_admin;
 
 CREATE ROLE webparse_user;
 ALTER ROLE webparse_user with LOGIN;
@@ -25,7 +26,8 @@ CREATE TABLE wp.pages
 (
   id uuid PRIMARY KEY,
   name varchar UNIQUE NOT NULL,
-  created_ts timestamp NOT NULL
+  created_ts timestamp NOT NULL,
+  md5_hash varchar UNIQUE NOT NULL
 ) TABLESPACE pg_default;
 
 
