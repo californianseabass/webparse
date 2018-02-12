@@ -1,0 +1,6 @@
+https://jacobian.org/writing/python-environment-2018/
+https://zwischenzugs.com/2011/08/29/my-favourite-secret-weapon-strace/
+https://www.linkedin.com/pulse/amazon-aurora-postgres-first-thoughts-eric-green/
+https://gist.github.com/staltz/868e7e9bc2a7b8c1f754
+https://blog.dominodatalab.com/topology-and-density-based-clustering/
+https://news.ycombinator.com/item?id=16195055

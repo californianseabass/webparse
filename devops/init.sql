@@ -7,6 +7,7 @@ CREATE SCHEMA IF NOT EXISTS public AUTHORIZATION webparse_admin;
 
 CREATE SCHEMA IF NOT EXISTS wp AUTHORIZATION webparse_admin;
 GRANT ALL PRIVILEGES ON SCHEMA wp TO webparse_admin;
+GRANT USAGE ON SCHEMA wp TO webparse_admin;
 GRANT ALL PRIVILEGES ON DATABASE webparse to webparse_admin;
 
 CREATE ROLE webparse_user;
@@ -27,9 +28,11 @@ CREATE TABLE wp.pages
   id uuid PRIMARY KEY,
   name varchar UNIQUE NOT NULL,
   created_ts timestamp NOT NULL,
-  md5_hash varchar UNIQUE NOT NULL
+  md5_hash varchar UNIQUE NOT NULL,
+  title varchar
 ) TABLESPACE pg_default;
 
 
+GRANT SELECT ON TABLE wp.pages TO webparse_admin;
 GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA wp TO webparse_user;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA wp to webparse_user;

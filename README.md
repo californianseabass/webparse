@@ -1,3 +1,5 @@
+ curl -X -H "Accept: application/json" "http://127.0.0.1:5000/webparse/api/v0.1/pages"
+
 ###### Installation
 ```bash
 pyenv global 3.4.5

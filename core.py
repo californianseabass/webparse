@@ -26,10 +26,14 @@ def clean_title_string(title):
 
 def parse_url(url):
     response = requests.get(url)
-    soup = bs4.BeautifulSoup(response.text, 'html.parser')
-    title = clean_title_string(soup.title.string)
-    text = soup.get_text()
-    return title, text
+    if response.status_code == 200:
+        soup = bs4.BeautifulSoup(response.text, 'html.parser')
+        title = clean_title_string(soup.title.string)
+        text = soup.get_text()
+        return title, text
+    else:
+        response.raise_for_status()
+        return None, None
 
 
 def search_pages(search_term):
@@ -56,10 +60,13 @@ def process_url(url, db_object):
     if not inspect.isclass(Database):
         raise Exception('db_object must be of class Database')
     hash_id = generate_url_hash(url)
-    pg_page = db_object.save_url_to_table(url, hash_id)
+    title, orig_text = parse_url(url)
+    if not title or not orig_text:
+        print(f'failed to save:{url}')
+        return
+    pg_page = db_object.save_url_to_table(url)
     es_page = None
     if pg_page:
-        title, orig_text = parse_url(url)
         text = ' '.join(orig_text.split())
         #hash_id = mmh3.hash(text)  # murmur hash, 32 bit
         es_page = Page(meta={'id': hash_id}, url=url, title=title, body=text, tags='')
@@ -79,7 +86,3 @@ def process_urls(urls):
     pages = list(map(process_url, urls))
     ids = [x._id for x in pages]
     print(ids)
-
-
-def search_term():
-    return
