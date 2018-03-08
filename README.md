@@ -1,5 +1,9 @@
  curl -X -H "Accept: application/json" "http://127.0.0.1:5000/webparse/api/v0.1/pages"
 
+### Running
+python rest.py
+
+
 ###### Installation
 ```bash
 pyenv global 3.4.5
@@ -30,6 +34,8 @@ curl -XPUT 'http://localhost:9200/pages?pretty' -d '{
     }
 }'
 
+### Seeding the databases
+python seed_backend.py
 
 #### Connecting to postgres via psql
 ```bash
