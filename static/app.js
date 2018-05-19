@@ -22,3 +22,41 @@ function save() {
 		document.getElementById('frame').setAttribute('src', backend_url);
 	})
 }
+
+
+function recursiveDeleteAllChildren(node){
+	while (node.firstChild) {
+		recursiveDeleteAllChildren(node.firstChild);
+		document.removeChild(node.firstChild);
+	}
+	document.removeNode(node);
+}
+
+function search() {
+    const searchPhrase = document.getElementById('search-box').value;
+    const request = new URL('http://localhost:5000/webparse/api/v0.1/pages');
+	request.searchParams.append('search-phrase', searchPhrase)
+    fetch(request)
+        .then(response => {
+            return response.json();
+        }).then(jsonData => {
+			const searchResultsList = document.getElementById('search-results');
+			oldListAnchor = document.querySelector('#search-results > ol')
+			if (oldListAnchor) {
+				oldListAnchor.remove();
+			}
+			previousListElements = document.querySelectorAll('#search-results > ol > li');
+			if (previousListElements) {
+				previousListElements.forEach(element => element.remove());
+			}
+			const listAnchor = searchResultsList.appendChild(
+				document.createElement('ol')
+			);
+			let lastListElement = listAnchor;
+			jsonData.forEach(data => {
+				const newListElement = document.createElement('li');
+				newListElement.appendChild(document.createTextNode(data.url));
+				listAnchor.appendChild(newListElement);
+			});
+		});
+}

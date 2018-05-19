@@ -40,9 +40,14 @@ def search_pages(search_term):
     client = elasticsearch.Elasticsearch()
     search = elasticsearch_dsl.Search(using=client, index='page') \
                               .query('match', body=search_term)
-    result = search.execute()
-    for i, hit in enumerate(result.hits):
-        print(f'{i} := {hit.title}')
+    response = search.execute()
+    return [
+        {
+            'tags': hit.tags,
+            'title': hit.title,
+            'url': hit.url
+        } for hit in response.hits
+    ]
 
 
 def process_url(url, db_object):

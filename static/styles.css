@@ -3,3 +3,20 @@
 	width: 800;
 	height: 800;
 }
+
+#frame {
+    display: none;
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+}
+
+#search-box {
+	width: 60%;
+}
+
+li:hover {
+	background-color: yellow;
+}

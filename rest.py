@@ -3,7 +3,7 @@ import json
 import requests
 from flask import Flask, Response, jsonify, request
 
-from core import process_url
+from core import process_url, search_pages
 from database import Database, DB_ARGS
 
 
@@ -45,6 +45,8 @@ def page():
             'url': pg_page[1],
             'md5_hash': pg_page[2]
         })
+    if request.method == 'GET':
+        return jsonify(search_pages(request.args.get('search-phrase')))
 
 
 if __name__ == '__main__':

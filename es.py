@@ -4,6 +4,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import Date, Keyword, Mapping, Nested, Text
 from elasticsearch_dsl import DocType
+from elasticsearch_dsl import Search
 # client = Elasticsearch()
 # s = Search(using=client)
 
@@ -52,6 +53,10 @@ def initialize_indices():
 
     # save the mapping into index 'my-index'
     m.save('page')
+
+
+def search_using_keywords(client):
+    search(client=client, index=Page.Meta.index)
 
 
 def main():

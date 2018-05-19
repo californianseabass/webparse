@@ -18,12 +18,19 @@
 </head>
 
 <body>
+  <div class="container">
   <!-- <form action="/analyze" method="POST"> -->
-    <input id="url_entry" type="text" />
-    <button  onclick="save()">save</button>
-	<br />
-    <iframe id="frame" onload="this.width=screen.width;this.height=screen.height;">></iframe>
+    <div>
+      <input id="search-box" type="text" />
+	</div>
+	<div>
+      <button  onclick="search()">search</button>
+	</div>
+	<div id="search-results">
+	</div>
+      <iframe id="frame" onload="this.width=screen.width;this.height=screen.height;">></iframe>
 <!-- </form> -->
+  </div>
   <script src="static/app.js"></script>
 </body>
 </html>
